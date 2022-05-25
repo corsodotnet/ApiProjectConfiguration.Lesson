@@ -1,10 +1,16 @@
-﻿using ApiProject.Lesson.Persistence.Configuration;
+﻿using ApiProject.Lesson.Models;
+using ApiProject.Lesson.Persistence.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,10 +22,12 @@ namespace ApiProject.Lesson.Controllers
     {
         private readonly ILogger<UniversityController> _logger;
         private DatabaseCxt _context;
-        public UniversityController(ILogger<UniversityController> logger,DatabaseCxt ctx)
+        private IOptions<AppSettings> _setting;
+        public UniversityController(ILogger<UniversityController> logger,DatabaseCxt ctx, IOptions<AppSettings> setting)
         {
             _logger = logger;
             _context = ctx;
+            _setting = setting;
         }
         // GET: api/<UniversityController>
         [HttpGet]
@@ -29,26 +37,27 @@ namespace ApiProject.Lesson.Controllers
         }
 
         // GET api/<UniversityController>/5
-        [HttpGet("{id}")]
-        public string Get(string corso)
+        [HttpGet("{Corso}")]
+        public IActionResult Get(string CorsoTitle)
         {
             Corso c;
             using (_context)
             {
                 try
                 {
-                    c = _context.Corso.Where(c => c.Name == corso).First();
+                    c = _context.Corso.Where(c => c.Name == CorsoTitle).First();
                     var data = _context.Corso
                    .Include(s => s.Students)
                    .First(c => c.Id == c.Id);
+
+                   throw new Exception("Errore:  corso di laurea non trovato"); 
                 }
                 catch (Exception ex)
                 {
-                    throw;
-                }
-
+                    return BadRequest(ex.Message);
+                } 
             }
-            return corso;
+            return Ok(c);
         }
 
         // POST api/<UniversityController>

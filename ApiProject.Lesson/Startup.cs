@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +40,7 @@ namespace ApiProject.Lesson
             Configuration = builder.Build();
         }
 
-       
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) // DI Container
@@ -47,14 +49,12 @@ namespace ApiProject.Lesson
             OptionsConfigurationServiceCollectionExtensions
               .Configure<AppSettings>(services, Configuration.GetSection("MySettings"));
 
-             _connStrn = Configuration["ConnectionString"];
+            _connStrn = Configuration["ConnectionString"];
 
             if (_env.IsDevelopment())
-            {
-                // Use SQL Lite
+            {               
                 services.AddDbContext<DatabaseCxt>(options =>
-                // options.UseSqlite(Configuration.GetConnectionString("ConnectionString")));
-                options.UseSqlServer(_connStrn));
+                options.UseInMemoryDatabase(databaseName: "UniversityTest"));
             }
             else if (_env.IsStaging())
             {
@@ -72,10 +72,16 @@ namespace ApiProject.Lesson
             {
                 /// TODO
             }
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+            });
+        // options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
 
-            services.AddSwaggerGen(c =>
+
+        services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApiProject.Lesson", Version = "v1" });
             });
