@@ -37,8 +37,8 @@ namespace ApiProject.Lesson.Controllers
         }
 
         // GET api/<UniversityController>/5
-        [HttpGet("{Corso}")]
-        public IActionResult Get(string CorsoTitle)
+        [HttpGet("GetByCorso")]
+        public IActionResult GetByCorso(string CorsoTitle)
         {
             Corso c;
             using (_context)
@@ -50,7 +50,7 @@ namespace ApiProject.Lesson.Controllers
                    .Include(s => s.Students)
                    .First(c => c.Id == c.Id);
 
-                   throw new Exception("Errore:  corso di laurea non trovato"); 
+                  // throw new Exception("Errore:  corso di laurea non trovato"); 
                 }
                 catch (Exception ex)
                 {
@@ -59,6 +59,29 @@ namespace ApiProject.Lesson.Controllers
             }
             return Ok(c);
         }
+        [HttpGet("GetByStudente")]
+        public IActionResult GetByStudente(string Studente)
+        {
+            Studente s;
+            using (_context)
+            {
+                try
+                {
+                    s = _context.Studente.Where(c => c.Name == Studente).First();
+                   // var data = _context.Corso
+                   //.Include(s => s.Students)
+                  // .First(c => c.Id == c.Id);
+
+                    //throw new Exception("Errore:  corso di laurea non trovato");
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+            return Ok(s);
+        }
+
 
         // POST api/<UniversityController>
         [HttpPost]

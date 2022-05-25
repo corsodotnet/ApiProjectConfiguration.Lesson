@@ -74,7 +74,8 @@ namespace ApiProject.Lesson
             }
             services.AddControllers().AddNewtonsoftJson(options =>
             {
-            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 
             });
         // options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
