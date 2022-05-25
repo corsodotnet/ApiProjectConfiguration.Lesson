@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  apiproject.lesson:
+    image: ${DOCKER_REGISTRY-}apiprojectlesson
+    build:
+      context: .
+      dockerfile: ApiProject.Lesson/Dockerfile
